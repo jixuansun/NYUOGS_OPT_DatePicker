@@ -1,0 +1,88 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/pikaday.css">
+        <link rel="stylesheet" href="css/site.css">
+        <!-- Javascript Libraries (p5 and pickADay): -->
+        <!-- https://github.com/dbushell/Pikaday -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/p5.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/addons/p5.dom.min.js"></script>
+        <script src="pikaday.js"></script>
+    </head>
+    <body>
+        <h1>Post-OPT Date Picker</h1>
+        <br>
+        <h4>Choose Your Program Completion Date:</h4>
+        <input type="text" id="datepicker">
+
+
+        <script>
+            let d1 = 'start';
+            let d2 = 'pick';
+            let d3 = 'end';
+			function formatDate(date) {
+				var monthNames = [
+					"January", "February", "March",
+					"April", "May", "June", "July",
+					"August", "September", "October",
+					"November", "December"
+				];
+
+				var day = date.getDate();
+				var monthIndex = date.getMonth();
+				var year = date.getFullYear();
+
+				return monthNames[monthIndex] + ' ' + day + ' ' + year;
+			}
+			var picker = new Pikaday(
+				{
+					field: document.getElementById('datepicker'),
+					firstDay: 1,
+					minDate: new Date(2000, 0, 1),
+					maxDate: new Date(2020, 12, 31),
+					yearRange: [2000,2020],
+					onSelect: function(d) {
+                        // Here we do our Date Calculations
+                        // variable 'd' is the date that 
+                        // was picked. 
+                        // doing some weird thing with turning 
+                        // d in to JavaScript date Object (...new Date())
+                        // allows us to add and subtract number of days:
+                        // the formateDate() function is just
+                        // another thing we copied from stackoverflow
+                        // to turn the Javascript date object into a nice string format:
+                        
+                        d2 = formatDate( new Date(d)); // here we update the d2 variable to the day picked, so we can use it in out p5 sketch.
+
+                        // now we calulcate 90 days before:
+                        // by (again) just applying what we find in stackoverflow
+                        // from here: https://stackoverflow.com/a/16401836
+						let daysBefore = new Date(d);
+						daysBefore = new Date(daysBefore.setDate(daysBefore.getDate() - 90))
+
+                        // same with 60 days after
+						let daysAfter = new Date(d);
+						daysAfter = new Date(daysAfter.setDate(daysAfter.getDate() + 60));
+                        
+                        // update thos variables to for use in p5 sketch.js
+                        d1 = formatDate(daysBefore);
+                        d3 = formatDate(daysAfter);
+
+                        // this is just two lines we copied form the pickAday example
+                        // seemed like without them it crashed 
+                        // but hey we can just leave them there why not. 
+						var date = document.createTextNode(this.getMoment().format('Do MMMM YYYY') + ' ');
+						document.getElementById('selected').appendChild(date);	
+					}
+				});
+                // not sure :) 
+				picker.setMoment(moment().dayOfYear(366));
+        </script>
+        <!-- finally include out p5 sketch.js that draws the graph, once a date has been picked -->
+		<script src="./sketch.js"></script>
+        
+        
+        <br>
+        <h4> Choosing Your Start Date: </h4>
+    </body>
+</html>
+
